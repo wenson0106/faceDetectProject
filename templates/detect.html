@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>detect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+</head>
+<body style="margin:0">
+    <header style="width:100%;height:50px;background-color:#3f7aad">
+        <p style="color:white;font-size:24px;margin:0;margin-left:15px;font-weight:900;height:50px;line-height:50px;">臉部偵測系統</p>
+    </header>
+    <div class="content">
+
+        <div class="camera_area" style="">
+            <video autoplay playsinline id="camera"></video>
+        </div>
+        <div class="btn_out_div">
+            <div id="start" class="video_start_btn">
+                <p style="height:40px;line-height:40px;">開始辨識</p>
+            </div>
+            <div id="start_hid" class="video_start_btn_active">
+                <p style="height:40px;line-height:40px;">辨識中</p>
+            </div>
+        </div>
+    </div>
+
+    <footer style="position:fixed;bottom:0;display:flex;background-color:#3f7aad;justify-content:right;width:100%;">
+        <div class="footer_btn" id="add">
+            <p style="height:40px;line-height:40px;">新增人員</p>
+        </div>
+        <div class="footer_btn" id="train">
+            <p style="height:40px;line-height:40px;">訓練資料</p>
+        </div>
+    </footer>
+
+    <div class="hidden_block" id="hidden_block">
+        <form id="video"  enctype="multipart/form-data" action="/detect_ajax/" method="POST">
+            <video autoplay playsinline id="opvideo" style="width:100%;aspect-ratio : 1 / 1;"></video>
+        </form>
+    </div>
+
+</body>
+</html>
+
+<style>
+    p{
+        margin:0;
+        padding:0;
+    }
+    .btn_out_div{
+        display:flex;
+        justify-content:center;
+    }
+    .footer_btn{
+        width: 130px;
+        height: 40px;
+        border: 2px solid #ddd;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        margin: 10px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .video_start_btn{
+        width: 120px;
+        height: 40px;
+        border: 2px solid #640000;
+        background-color: #bf0000;
+        border-radius: 30px;
+        margin: 5px;
+        text-align: center;
+        font-size: 20px;
+        color: white;
+        font-weight: 900;
+        box-shadow: 0px 5px 0px rgb(108 0 0);
+    }
+    .video_start_btn_active{
+        width: 120px;
+        height: 40px;
+        border: 2px solid #1c1c1c;
+        background-color: #404040;
+        border-radius: 30px;
+        margin: 5px;
+        text-align: center;
+        font-size: 20px;
+        color: #bfbfbf;
+        font-weight: 900;
+        position: relative;
+        top: 2px;
+        box-shadow: 0px 3px 0px rgb(0 0 0);
+        display:none;
+    }
+    .select_mode_btn{
+        background-color:#ddd;
+        border:2px solid #666;
+        border-radius:5px;
+        margin:0 5px;
+        width:80px;
+        height:40px;
+        font-size:18px;
+        font-weight:900;
+        color:black;
+    }
+    .content{
+        margin-top:40px;
+    }
+    .camera_area{
+        width: 80%;
+        padding:8px;
+        padding-bottom: 4px;
+        aspect-ratio : 1 / 1;
+        margin:15px auto;
+        background:
+                linear-gradient(to top, #c55f17, #c55f17) left top no-repeat,/*上左*/
+                linear-gradient(to right, #c55f17, #c55f17) left top no-repeat,/*左上*/
+                linear-gradient(to left, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to bottom, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to left, #c55f17, #c55f17) left bottom no-repeat,/*下左*/
+                linear-gradient(to bottom, #c55f17, #c55f17) left bottom no-repeat,/*左下*/
+                linear-gradient(to top, #c55f17, #c55f17) right bottom no-repeat,/*下右*/
+                linear-gradient(to left, #c55f17, #c55f17) right bottom no-repeat;/*右下*/
+        background-size: 4px 24px, 24px 4px, 4px 24px, 24px 4px;
+    }
+    #camera{
+        width:100%;
+        aspect-ratio : 1 / 1;
+    }
+    .hidden_block{
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: none;
+        background-color: rgba(0,0,0,0.7);
+        z-index: 200;
+        height: 100%;
+        width: 100%;
+    }
+    #result{
+        width: 80%;
+        margin: 10%;
+        margin-top:130px;
+        aspect-ratio: 1 / 1;
+    }
+    .btn{
+        text-align:center;
+        border-radius:70px;
+        width:70px;
+        height:70px;
+        margin:30px;
+        border:4px solid white;
+    }
+    .btn_hid{
+        font-size:20px;
+        height:35px;
+        line-height:35px;
+        margin:10px;
+        text-align:center;
+        border:2px solid #ddd;
+        color:black;
+        background-color:white;
+        border-radius:5px;
+        width:70px;
+        height:35px;
+    }
+    @media screen and (min-width:850px) and (max-width:1500px){
+         .camera_area{
+            width: 40%;
+            padding:8px;
+            padding-bottom: 4px;
+            aspect-ratio : 1 / 1;
+            margin:15px 5%;
+            background:
+                linear-gradient(to top, #c55f17, #c55f17) left top no-repeat,/*上左*/
+                linear-gradient(to right, #c55f17, #c55f17) left top no-repeat,/*左上*/
+                linear-gradient(to left, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to bottom, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to left, #c55f17, #c55f17) left bottom no-repeat,/*下左*/
+                linear-gradient(to bottom, #c55f17, #c55f17) left bottom no-repeat,/*左下*/
+                linear-gradient(to top, #c55f17, #c55f17) right bottom no-repeat,/*下右*/
+                linear-gradient(to left, #c55f17, #c55f17) right bottom no-repeat;/*右下*/
+            background-size: 4px 24px, 24px 4px, 4px 24px, 24px 4px;
+        }
+        .content{
+            margin-top:40px;
+            display:flex;
+        }
+        .btn_out_div{
+            display:flex;
+            justify-content:center;
+            margin:5%;
+        }
+    }
+    @media screen and (min-width:1500px){
+         .camera_area{
+            width: 600px;
+            padding:8px;
+            padding-bottom: 4px;
+            aspect-ratio : 1 / 1;
+            margin:15px 5%;
+            background:
+                linear-gradient(to top, #c55f17, #c55f17) left top no-repeat,/*上左*/
+                linear-gradient(to right, #c55f17, #c55f17) left top no-repeat,/*左上*/
+                linear-gradient(to left, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to bottom, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to left, #c55f17, #c55f17) left bottom no-repeat,/*下左*/
+                linear-gradient(to bottom, #c55f17, #c55f17) left bottom no-repeat,/*左下*/
+                linear-gradient(to top, #c55f17, #c55f17) right bottom no-repeat,/*下右*/
+                linear-gradient(to left, #c55f17, #c55f17) right bottom no-repeat;/*右下*/
+            background-size: 4px 24px, 24px 4px, 4px 24px, 24px 4px;
+        }
+        .content{
+            margin-top:40px;
+            display:flex;
+        }
+        .btn_out_div{
+            display:flex;
+            justify-content:center;
+            margin:5%;
+        }
+    }
+</style>
+<script type="text/javascript">
+    let chunks = [];
+    var form=document.getElementById("video");
+    var form_data = new FormData(form);
+    var constraints = {
+        video: { width: 640, height: 640 }
+    };
+    var detect_num=0;
+    var video = document.querySelector('video');
+    var outputVideo = document.getElementById('opvideo');
+    get_camera();
+    function handleSuccess(stream) {
+        window.stream = stream;
+        video.srcObject = stream;
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.addEventListener('dataavailable', mediaRecorderOnDataAvailable)
+        mediaRecorder.addEventListener('stop', mediaRecorderOnStop);
+
+
+        function mediaRecorderOnDataAvailable(e) {
+            chunks.push(e.data);
+        }
+
+        function mediaRecorderOnStop(e) {
+            var blob = new Blob(chunks, { 'type': 'video/webm; codecs=vp9' });
+            form_data.delete("video", blob);
+            form_data.append("video", blob);
+            chunks = [];
+            outputVideoURL = URL.createObjectURL(blob);
+            outputVideo.src = outputVideoURL;
+            $.ajax({
+                url: '/detect_ajax/',
+                method: 'post',
+                processData: false,
+                contentType: false,
+                data: form_data,
+                success: function (response) {
+                    if(response.message=="none"){
+                        reset();
+                        if(detect_num<=10){
+                            onStartRecording(e);
+                        }else{
+                            start_hid.style.display="none";
+                            start.style.display="block";
+                            alert('辨認失敗');
+                            detect_num=0;
+                        }
+                    }else{
+                        reset();
+                        start_hid.style.display="none";
+                        start.style.display="block";
+                        detect_num=0;
+                        alert(response.message+"\n現在時間 : "+response.time);
+                    }
+                }
+            });
+
+        }
+        var start = document.querySelector('#start');
+        var start_hid = document.querySelector('#start_hid');
+        var on_start = document.querySelector('#on_start');
+        var on_video = document.querySelector('#on_video');
+
+        start.addEventListener('click', onStartRecording);
+
+
+        function onStartRecording (e) {
+            mediaRecorder.start();
+            start.style.display="none";
+            start_hid.style.display="block";
+            setTimeout(function(){
+                onStopRecording (e);
+            },500);
+        }
+
+        function onStopRecording (e) {
+            detect_num+=1;
+            mediaRecorder.stop();
+        }
+
+        function reset(){
+            URL.revokeObjectURL(outputVideoURL);
+            outputVideo.src = '';
+            outputVideo.controls = false;
+        }
+    }
+
+    function handleError(error) {
+        console.log('getUserMedia error: ', error);
+    }
+    function get_camera(){
+        navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+    }
+
+    $("#add").click(function(){
+        window.location.href = '/index/';
+    })
+    $("#train").click(function(){
+        window.location.href = '/train/';
+    })
+
+
+
+</script>

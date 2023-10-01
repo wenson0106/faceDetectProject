@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>train</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header style="width:100%;height:50px;background-color:#3f7aad">
+        <div id="last" style="color:white;font-size:30px;margin:auto 8px;display:inline;"><i class="fa-solid fa-angle-left"></i></div>
+        <p style="color:white;font-size:24px;margin:0;margin-left:15px;font-weight:900;height:50px;line-height:50px;display:inline">訓練資料</p>
+    </header>
+    <h1>目前人員</h1>
+
+    <ul id="member_list">
+        {% for n in name %}
+        <li class="mem">{{n}}</li>
+        {% endfor %}
+    </ul>
+    <form action="/train_finished/" method="post">
+        <input type="submit" id="train" value="train" class="video_start_btn">
+        <input type="submit" id="training" value="training..." class="video_start_btn_active" style="display:none">
+    </form>
+</body>
+</html>
+<style>
+    .video_start_btn{
+        width: 120px;
+        height: 40px;
+        border: 2px solid #640000;
+        background-color: #bf0000;
+        border-radius: 30px;
+        margin: 5px;
+        text-align: center;
+        font-size: 20px;
+        color: white;
+        font-weight: 900;
+        box-shadow: 0px 5px 0px rgb(108 0 0);
+    }
+    .video_start_btn_active{
+        width: 120px;
+        height: 40px;
+        border: 2px solid #1c1c1c;
+        background-color: #404040;
+        border-radius: 30px;
+        margin: 5px;
+        text-align: center;
+        font-size: 20px;
+        color: #bfbfbf;
+        font-weight: 900;
+        position: relative;
+        top: 2px;
+        box-shadow: 0px 3px 0px rgb(0 0 0);
+        display:none;
+    }
+    .mem{
+        font-size: 22px;
+        font-weight: bold;
+        list-style: none;
+    }
+</style>
+<script>
+    $("#last").click(function(){
+        window.location.href = '/detect/';
+    })
+    $("#train").click(function(){
+        $(this).css("display","none");
+        $("#training").css("display","block");
+    })
+    $(document).ready(function(){
+
+    })
+
+</script>

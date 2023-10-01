@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+</head>
+<body style="margin:0">
+    <header style="width:100%;height:50px;background-color:#3f7aad">
+        <div id="last" style="color:white;font-size:30px;margin:auto 8px;display:inline;"><i class="fa-solid fa-angle-left"></i></div>
+        <p style="color:white;font-size:24px;margin:0;margin-left:15px;font-weight:900;height:50px;line-height:50px;display:inline">新增人員</p>
+    </header>
+    <div class="content">
+
+        <div class="camera_area" style="">
+            <video autoplay playsinline id="camera"></video>
+        </div>
+        <div class="btn_out_div">
+            <div id="start" class="video_start_btn">
+                <p style="height:40px;line-height:40px;">開始錄製</p>
+            </div>
+            <div id="start_hid" class="video_start_btn_active">
+                <p style="height:40px;line-height:40px;">錄製中...</p>
+            </div>
+            <div style="width:200px;margin:20px auto;border:2px solid #ddd;border-radius:5px;background-color:#f5f5f5;padding:5px;display:flex;margin-bottom:0;">
+                <div style="height: 100%;width: 20px;text-align: right;font-size: 20px;padding:0 8px;">
+                    <p id="on_start" style="visibility: hidden;"><i class="fa-solid fa-circle-arrow-right"></i></p>
+                    <p id="on_video" style="visibility: hidden;"><i class="fa-solid fa-circle-arrow-right"></i></p>
+                </div>
+                <div style="height:100%;width:calc(100% - 50px);">
+                    <p style="display:inline;" class="start_label">開始倒計時:</p><p style="display:inline;" id="start_time" class="start_label"></p><br>
+                    <p style="display:inline;" class="video_label">錄影中倒計時:</p><p style="display:inline;" id="video_time" class="video_label"></p>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <footer style="position:fixed;bottom:0;display:flex;background-color:#3f7aad;justify-content:right;width:100%;">
+    </footer>
+
+    <div class="hidden_block" id="hidden_block">
+        <form id="video"  enctype="multipart/form-data" action="/get_video/" method="POST">
+            <div id="result">
+                <video autoplay playsinline id="opvideo" style="width:100%;aspect-ratio : 1 / 1;"></video>
+                <p style="display:inline;font-size:20px;color:white;">輸入姓名(限英文) : </p><input id="file_name" type="text" name="file_name" value="" placeholder="ex:wenson" style="width: 200px;height: 35px;border-radius: 10px;font-size: 20px;padding: 0 10px;">
+                <div id="back" class="btn_hid">
+                    重拍
+                </div>
+                <div id="go" class="btn_hid">
+                    確認
+                </div>
+                <input type="file" style="display:none">
+            </div>
+        </form>
+    </div>
+
+    <div class="tips">
+        <div class="tips_content">
+            <div class="tips_header">
+                <div style="float:left;margin:12px;">
+                    <p class="first_title">提示</p>
+                    <p class="second_title">&nbsp;點擊錄製後，面對鏡頭上下左右轉動頭部</p>
+                </div>
+                <div class="ex_btn"><p class="ex_btn_p"><i class="fa-solid fa-xmark"></i></p></div>
+            </div>
+            {% load static %}
+            <img src='{% static "/image/ex.gif"%}' style="height:calc(100% - 70px);aspect-ratio : 1 / 1;margin: auto 35px;">
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    .first_title{
+        font-size:36px;
+        font-weight:900;
+        display:inline;
+    }
+    .second_title{
+        font-size:18px;
+        font-weight:900;
+        display:inline;
+    }
+    .tips{
+        width:100%;
+        height:100%;
+        position:absolute;
+        top:0;
+        left:0;
+        z-index:1000;
+        background-color:rgba(0 0 0 / 50%);
+    }
+    .tips_content{
+        background-color:#ededed;
+        width:80%;
+        aspect-ratio : 1 / 1;
+        margin:20% auto;
+        border-radius:20px;
+        box-shadow: 4px 4px 4px rgb(0 0 0 / 50%);
+    }
+    .tips_header{
+        width:100%;
+        height:70px;
+        border-bottom:3px solid black;
+    }
+    .ex_btn{
+        width:50px;
+        height:50px;
+        border-radius:5px;
+        background-color:#f5f5f5;
+        border:2px solid #666;
+        text-align:center;
+        float:right;margin:10px;
+    }
+    .ex_btn_p{
+        height:50px;
+        line-height:50px;
+        font-size: 35px;
+        color: #646464;
+    }
+    p{
+        margin:0;
+        padding:0;
+    }
+    .video_start_btn{
+        width: 120px;
+        height: 40px;
+        border: 2px solid #640000;
+        background-color: #bf0000;
+        border-radius: 30px;
+        margin: 5px auto;
+        text-align: center;
+        font-size: 20px;
+        color: white;
+        font-weight: 900;
+        box-shadow: 0px 5px 0px rgb(108 0 0);
+    }
+    .video_start_btn_active{
+        width: 120px;
+        height: 40px;
+        border: 2px solid #1c1c1c;
+        background-color: #404040;
+        border-radius: 30px;
+        margin: 5px auto;
+        text-align: center;
+        font-size: 20px;
+        color: #bfbfbf;
+        font-weight: 900;
+        position: relative;
+        top: 2px;
+        box-shadow: 0px 3px 0px rgb(0 0 0);
+        display:none;
+    }
+    .select_mode_btn{
+        background-color:#ddd;
+        border:2px solid #666;
+        border-radius:5px;
+        margin:0 5px;
+        width:80px;
+        height:40px;
+        font-size:18px;
+        font-weight:900;
+        color:black;
+    }
+    .btn_out_div{
+        justify-content:center;
+    }
+    .content{
+        margin-top:40px;
+    }
+    .camera_area{
+        width: 80%;
+        padding:8px;
+        padding-bottom: 4px;
+        aspect-ratio : 1 / 1;
+        margin:15px auto;
+        background:
+                linear-gradient(to top, #c55f17, #c55f17) left top no-repeat,/*上左*/
+                linear-gradient(to right, #c55f17, #c55f17) left top no-repeat,/*左上*/
+                linear-gradient(to left, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to bottom, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to left, #c55f17, #c55f17) left bottom no-repeat,/*下左*/
+                linear-gradient(to bottom, #c55f17, #c55f17) left bottom no-repeat,/*左下*/
+                linear-gradient(to top, #c55f17, #c55f17) right bottom no-repeat,/*下右*/
+                linear-gradient(to left, #c55f17, #c55f17) right bottom no-repeat;/*右下*/
+        background-size: 4px 24px, 24px 4px, 4px 24px, 24px 4px;
+    }
+    #camera{
+        width:100%;
+        aspect-ratio : 1 / 1;
+    }
+    .hidden_block{
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: none;
+        background-color: rgba(0,0,0,0.7);
+        z-index: 200;
+        height: 100%;
+        width: 100%;
+    }
+    #result{
+        width: 80%;
+        margin: 10%;
+        margin-top:130px;
+        aspect-ratio: 1 / 1;
+    }
+    .btn{
+        text-align:center;
+        border-radius:70px;
+        width:70px;
+        height:70px;
+        margin:30px;
+        border:4px solid white;
+    }
+    .btn_hid{
+        font-size:20px;
+        height:35px;
+        line-height:35px;
+        margin:10px;
+        text-align:center;
+        border:2px solid #ddd;
+        color:black;
+        background-color:white;
+        border-radius:5px;
+        width:70px;
+        height:35px;
+    }
+    @media screen and (min-width:850px) and (max-width:1500px){
+         .camera_area{
+            width: 40%;
+            padding:8px;
+            padding-bottom: 4px;
+            aspect-ratio : 1 / 1;
+            margin:15px 5%;
+            background:
+                linear-gradient(to top, #c55f17, #c55f17) left top no-repeat,/*上左*/
+                linear-gradient(to right, #c55f17, #c55f17) left top no-repeat,/*左上*/
+                linear-gradient(to left, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to bottom, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to left, #c55f17, #c55f17) left bottom no-repeat,/*下左*/
+                linear-gradient(to bottom, #c55f17, #c55f17) left bottom no-repeat,/*左下*/
+                linear-gradient(to top, #c55f17, #c55f17) right bottom no-repeat,/*下右*/
+                linear-gradient(to left, #c55f17, #c55f17) right bottom no-repeat;/*右下*/
+            background-size: 4px 24px, 24px 4px, 4px 24px, 24px 4px;
+        }
+        .content{
+            margin-top:40px;
+            display:flex;
+        }
+        .btn_out_div{
+            justify-content:center;
+            margin:5%;
+        }
+        #result{
+            width: 40%;
+            margin: 5%;
+            margin-top:130px;
+            aspect-ratio: 1 / 1;
+        }
+        .tips_content{
+            background-color:#ededed;
+            width:600px;
+            aspect-ratio : 1 / 1;
+            margin:10% auto;
+            border-radius:20px;
+            box-shadow: 4px 4px 4px rgb(0 0 0 / 50%);
+        }
+    }
+    @media screen and (min-width:1500px){
+         .camera_area{
+            width: 600px;
+            padding:8px;
+            padding-bottom: 4px;
+            aspect-ratio : 1 / 1;
+            margin:15px 5%;
+            background:
+                linear-gradient(to top, #c55f17, #c55f17) left top no-repeat,/*上左*/
+                linear-gradient(to right, #c55f17, #c55f17) left top no-repeat,/*左上*/
+                linear-gradient(to left, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to bottom, #c55f17, #c55f17) right top no-repeat,/*上右*/
+                linear-gradient(to left, #c55f17, #c55f17) left bottom no-repeat,/*下左*/
+                linear-gradient(to bottom, #c55f17, #c55f17) left bottom no-repeat,/*左下*/
+                linear-gradient(to top, #c55f17, #c55f17) right bottom no-repeat,/*下右*/
+                linear-gradient(to left, #c55f17, #c55f17) right bottom no-repeat;/*右下*/
+            background-size: 4px 24px, 24px 4px, 4px 24px, 24px 4px;
+        }
+        .content{
+            margin-top:40px;
+            display:flex;
+        }
+        .btn_out_div{
+            justify-content:center;
+            margin:5%;
+        }
+        #result{
+            width: 600px;
+            margin: 5%;
+            margin-top:130px;
+            aspect-ratio: 1 / 1;
+        }
+        .tips_content{
+            background-color:#ededed;
+            width:600px;
+            aspect-ratio : 1 / 1;
+            margin:10% auto;
+            border-radius:20px;
+            box-shadow: 4px 4px 4px rgb(0 0 0 / 50%);
+        }
+    }
+    @media screen and (max-width:640px){
+        .first_title{
+            font-size:20px;
+            font-weight:900;
+            display:block;
+        }
+        .second_title{
+            margin-left:-2px;
+            font-size:12px;
+            font-weight:900;
+            display:block;
+        }
+        .ex_btn{
+            width:30px;
+            height:30px;
+            border-radius:5px;
+            background-color:#f5f5f5;
+            border:2px solid #666;
+            text-align:center;
+            float:right;margin:10px;
+        }
+        .ex_btn_p{
+            height:30px;
+            line-height:30px;
+            font-size: 26px;
+            color: #646464;
+        }
+    }
+</style>
+<script type="text/javascript">
+    let chunks = [];
+    var form=document.getElementById("video");
+    var form_data = new FormData(form);
+    var constraints = {
+        video: { width: 640, height: 640 }
+    };
+
+    var video = document.querySelector('video');
+    var outputVideo = document.getElementById('opvideo');
+
+    function handleSuccess(stream) {
+        window.stream = stream; // only to make stream available to console
+        video.srcObject = stream;
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.addEventListener('dataavailable', mediaRecorderOnDataAvailable)   // 資料傳入時觸發
+        mediaRecorder.addEventListener('stop', mediaRecorderOnStop);                    // 停止錄影時觸發
+
+        function mediaRecorderOnDataAvailable(e) {
+            chunks.push(e.data);
+        }
+
+        function mediaRecorderOnStop(e) {
+            var blob = new Blob(chunks, { 'type': 'video/webm; codecs=vp9' });
+            form_data.append("video", blob);
+            chunks = [];
+            outputVideoURL = URL.createObjectURL(blob);
+            outputVideo.src = outputVideoURL;
+        }
+    }
+
+    function handleError(error) {
+        console.log('getUserMedia error: ', error);
+    }
+    function get_camera(){
+        navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+    }
+    get_camera();
+
+    var start = document.querySelector('#start');
+    var start_hid = document.querySelector('#start_hid');
+    var on_start = document.querySelector('#on_start');
+    var on_video = document.querySelector('#on_video');
+
+    start.addEventListener('click', onStartRecording);
+
+
+    function onStartRecording (e) {
+        start.style.display="none";
+        on_start.style.visibility="visible";
+        start_hid.style.display="block";
+        for(let j = 3; j >= 0; j-=1) {
+            setTimeout(function() {
+                $("#start_time").html(j);
+                if(j==0){
+                    on_start.style.visibility="hidden";
+                    on_video.style.visibility="visible";
+                    mediaRecorder.start();
+                    for(let i = 5; i >= 0; i-=1) {
+                        setTimeout(function() {
+                            $("#video_time").html(i);
+                            if(i==0){
+                                onStopRecording (e);
+                                on_start.style.visibility="hidden";
+                                on_video.style.visibility="hidden";
+                                $("#start_time").html("");
+                                $("#video_time").html("");
+                            }
+                        },(6-i)*1000)
+                    }
+                }
+            },(4-j)*1000)
+        }
+    }
+
+    function onStopRecording (e) {
+        mediaRecorder.stop();
+        var hdb = document.getElementById('hidden_block');
+        hdb.style.display="block";
+        stream.getTracks().forEach(function (track) {
+           track.stop();
+        })
+        start_hid.style.display="none";
+        start.style.display="block";
+    }
+
+    $('#back').click(function(){
+        reset();
+    });
+
+    function reset(){
+        $('.hidden_block').css("display","none");
+        URL.revokeObjectURL(outputVideoURL);
+        outputVideo.src = '';
+        outputVideo.controls = false;
+        get_camera();
+        if (video.srcObject) {
+            video.pause();
+            video.srcObject.getTracks().forEach((track) => {
+              track.stop();
+            });
+        }
+    }
+    $('#go').click(function(){
+        let dir=$("#file_name").val();
+        form_data.append("name", dir);
+        $.ajax({
+            url: '/get_video/',
+            method: 'post',
+            processData: false,
+            contentType: false,
+            data: form_data
+        });
+        reset();
+        setTimeout(alert("上傳成功"),10000);
+
+    });
+    $("#last").click(function(){
+        window.location.href = '/detect/';
+    })
+    $(".ex_btn").click(function(){
+        $(".tips").css("display","none");
+    })
+</script>
